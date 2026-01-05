@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="popup-wrapper">
+      <div class="entrance-container" id="entranceView">
+        <div class="entrance-content">
+          <h1 class="app-title text-focus-in">Focus</h1>
+          <div class="owl-icon-large">🦉</div>
+          <h2 class="motivation-text">Let's get stuff done today.</h2>
+
+          <button id="enterAppBtn" class="primary-button">Let's Go</button>
+
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="dontShowToday" />
+            <label for="dontShowToday">Don't show this again today</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="confirmModal" class="modal-overlay" style="display: none">
+        <div class="modal-content" style="text-align: center; padding: 25px">
+          <div style="font-size: 40px; margin-bottom: 15px">⚠️</div>
+          <h3 style="margin: 0 0 10px 0">Reset All Data?</h3>
+          <p
+            style="
+              font-size: 13px;
+              color: #666;
+              margin-bottom: 20px;
+              line-height: 1.4;
+            "
+          >
+            This will permanently delete your site lists and all history.
+          </p>
+          <div style="display: flex; gap: 10px; justify-content: center">
+            <button id="cancelReset" class="secondary-button" style="flex: 1">
+              Cancel
+            </button>
+            <button
+              id="confirmReset"
+              style="
+                flex: 1;
+                background: #ff3b30;
+                color: white;
+                border: none;
+                border-radius: 12px;
+                padding: 10px;
+                cursor: pointer;
+                font-weight: 600;
+              "
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="healthModal" class="modal-overlay" style="display: none">
+        <div class="modal-content">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+            "
+          >
+            <h3 style="margin: 0">Health Breakdown</h3>
+            <span id="closeModal" style="cursor: pointer; font-size: 20px"
+              >&times;</span
+            >
+          </div>
+          <div id="healthImpactList" class="site-list"></div>
+        </div>
+      </div>
+
+      <div class="container" id="mainView" style="display: none">
+        <div class="pet-card" id="petCardAction" style="cursor: pointer">
+          <img id="petImage" src="images/healthy.gif" />
+          <div class="pet-info">
+            <div id="petStatus" class="status-text">Growing...</div>
+            <div class="progress-container">
+              <div id="healthBar" class="progress-fill"></div>
+            </div>
+          </div>
+          <div style="color: #999; font-size: 14px; margin-left: auto">ⓘ</div>
+        </div>
+
+        <div
+          id="reviewSection"
+          style="
+            display: none;
+            background: #fff3cd;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #ffe69c;
+          "
+        >
+          <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #856404">
+            ⚠️ Unclassified websites
+          </h4>
+          <div id="reviewList"></div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <select id="timeRange" class="nav-dropdown">
+            <option value="today">Today</option>
+            <option value="week">Last 7 Days</option>
+            <option value="all">All Time</option>
+          </select>
+          <div style="display: flex; gap: 10px; align-items: center">
+            <button id="calendarNavBtn" class="nav-icon-btn">📅</button>
+            <button id="manageBtn" class="nav-icon-btn">⚙️</button>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="usageChart"></canvas>
+        </div>
+
+        <div class="list-group">
+          <div
+            class="list-header"
+            id="toggleStats"
+            style="
+              cursor: pointer;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-right: 16px;
+            "
+          >
+            <h4 style="margin: 0; font-size: 14px">Usage Details</h4>
+            <span class="chevron" id="chevronStats">▼</span>
+          </div>
+          <div id="statsCollapsible">
+            <div
+              id="statsList"
+              class="stats-list"
+              style="padding: 10px 0"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container" id="calendarView" style="display: none">
+        <div class="calendar-header">
+          <button
+            id="prevMonth"
+            style="
+              background: none;
+              border: none;
+              color: #007aff;
+              cursor: pointer;
+              font-size: 18px;
+            "
+          >
+            &larr;
+          </button>
+          <h3 id="monthTitle" class="section-title">Month Year</h3>
+          <button
+            id="nextMonth"
+            style="
+              background: none;
+              border: none;
+              color: #007aff;
+              cursor: pointer;
+              font-size: 18px;
+            "
+          >
+            &rarr;
+          </button>
+        </div>
+
+        <div class="calendar-weekdays">
+          <div>Sun</div>
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+        </div>
+
+        <div id="calendarGrid" class="calendar-grid"></div>
+
+        <div style="margin-top: 20px; text-align: center">
+          <div
+            id="dayDetailChartTitle"
+            class="section-title"
+            style="font-size: 20px; margin-top: 5px; display: none"
+          >
+            Selected Day Stats
+          </div>
+          <div
+            id="dayMostUsedSection"
+            style="
+              display: none;
+              background: #ffffff;
+              padding: 12px;
+              border-radius: 16px;
+              margin-top: 5px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            "
+          >
+            <div
+              id="mostUsedStat"
+              style="font-size: 13px; color: #1d1d1f"
+            ></div>
+          </div>
+        </div>
+
+        <div
+          class="chart-container"
+          id="dayDetailChartContainer"
+          style="display: none"
+        >
+          <canvas id="dayDetailChart"></canvas>
+        </div>
+        <button
+          id="backFromCalBtn"
+          class="secondary-button"
+          style="width: auto; padding: 8px 20px"
+        >
+          Close History
+        </button>
+      </div>
+
+      <div class="container" id="settingsView" style="display: none">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 20px;
+          "
+        >
+          <button
+            id="backBtn"
+            style="
+              position: absolute;
+              left: 0;
+              background: none;
+              border: none;
+              color: #007aff;
+              cursor: pointer;
+              font-size: 16px;
+            "
+          >
+            &larr; Back
+          </button>
+          <h3 class="section-title">Settings</h3>
+        </div>
+
+        <div class="list-group">
+          <div
+            class="list-header"
+            id="toggleProd"
+            style="
+              cursor: pointer;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-right: 16px;
+            "
+          >
+            <h4>Productive</h4>
+            <span class="chevron" id="chevronProd">▼</span>
+          </div>
+          <div id="prodCollapsible">
+            <div class="settings-input-container">
+              <input type="text" id="newProdInput" placeholder="example.com" />
+              <button id="addProdBtn" class="icon-btn">+</button>
+            </div>
+            <div id="prodList" class="site-list"></div>
+          </div>
+        </div>
+
+        <div class="list-group">
+          <div
+            class="list-header"
+            id="toggleUnprod"
+            style="
+              cursor: pointer;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-right: 16px;
+            "
+          >
+            <h4>Unproductive</h4>
+            <span class="chevron" id="chevronUnprod">▼</span>
+          </div>
+          <div id="unprodCollapsible">
+            <div class="settings-input-container">
+              <input
+                type="text"
+                id="newUnprodInput"
+                placeholder="example.com"
+              />
+              <button
+                id="addUnprodBtn"
+                class="icon-btn"
+                style="background: #ff3b30"
+              >
+                +
+              </button>
+            </div>
+            <div id="unprodList" class="site-list"></div>
+          </div>
+        </div>
+
+        <div class="list-group">
+          <h4>Visuals</h4>
+          <div
+            class="settings-input-container"
+            style="justify-content: space-between; align-items: center"
+          >
+            <span style="font-size: 14px; font-weight: 500">Chart Style</span>
+            <select id="chartTypePref" class="nav-dropdown">
+              <option value="pie">Pie</option>
+              <option value="doughnut">Doughnut</option>
+              <option value="bar">Bar</option>
+            </select>
+          </div>
+          <div
+            class="settings-input-container"
+            style="
+              justify-content: space-between;
+              align-items: center;
+              border-top: 1px solid #f2f2f7;
+            "
+          >
+            <span style="font-size: 14px; font-weight: 500"
+              >Monochrome Mode</span
+            >
+            <input
+              type="checkbox"
+              id="monochromeToggle"
+              style="width: 20px; height: 20px"
+            />
+          </div>
+        </div>
+
+        <div
+          class="list-group"
+          style="margin-top: 20px; border: 1px solid rgba(255, 59, 48, 0.2)"
+        >
+          <div style="padding: 16px">
+            <button
+              id="resetBtn"
+              style="
+                width: 100%;
+                background: #ff3b30;
+                color: white;
+                border: none;
+                padding: 12px;
+                border-radius: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              "
+            >
+              Reset All Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

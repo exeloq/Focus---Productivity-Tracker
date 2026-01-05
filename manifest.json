@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Focus Tracker",
+  "version": "1.0",
+  "permissions": [
+    "action",
+    "storage", 
+    "tabs", 
+    "activeTab", 
+    "notifications",
+    "alarms" 
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+  "16": "images/logo16.png",
+  "48": "images/logo48.png",
+  "128": "images/logo128.png"
+  },
+  "action": {
+    "default_icon": "images/logo48.png",
+    "default_popup": "popup.html"
+  }
+}
