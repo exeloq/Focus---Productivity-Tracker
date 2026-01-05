@@ -46,23 +46,37 @@ Automatic Time Tracking: Silently monitors the time spent on active browser tabs
 <img width="377" height="360" alt="image" src="https://github.com/user-attachments/assets/e6139242-5f0b-4d55-9246-212938a4b2f7" />  <img width="379" height="466" alt="image" src="https://github.com/user-attachments/assets/d5dcdf52-806f-4073-ba0e-9e5876b688c7" />
 
 
+## Tech Stack
+- Frontend: HTML5, CSS3, JavaScript
+- Data Visualization: [ Chart.js](https://www.chartjs.org/)
+- Extension API: Manifest V3, Service Workers, Alarms, and Storage API
 
 
 
 
-## Run Locally
+## Permissions Used
+-storage: To save your history and site preferences.
 
-Download project as ZIP
+-tabs & activeTab: To identify which domain you are currently visiting.
+
+-alarms: To trigger the tracking logic consistently in the background.
+
+-notifications: For future implementation of focus alerts.
+
+
+## Installation
+Download or clone this repository.
 https://github.com/exeloq/Focus---Productivity-Tracker
 
 Unzip into a new folder
 
-Go to chrome://extensions/
+Open Chrome and navigate to chrome://extensions/
 
-Enable Developer Mode
+Enable "Developer mode" in the top right corner.
 <img width="1919" height="104" alt="image" src="https://github.com/user-attachments/assets/ebfb872e-822f-45ce-a823-4b0cd8a47b0e" />
 
-Choose "Load unpacked", and select your previously created folder.
+Click "Load unpacked" and select the ExtensionProject folder.
+
 --------------------------------------------------------------------------------------------
 
 Data is secure and privately stored: All data is stored locally on your machine via chrome.storage.local. No data leaves your browser's local storage.
